@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Set kernel name
+BUILD_FOR="A13"
+DATE="$(TZ=Asia/India date +%Y%m%d%H%M%S)"
+KERNEL_NAME="SukiSu${BUILD_FOR}-${DATE}.zip"
+
 function compile() 
 {
 rm -rf AnyKernel
@@ -84,7 +89,7 @@ function zipping()
     gzip -c Image > Image.gz
     cat Image.gz dtb > Image.gz-dtb
     rm -rf Image Image.gz dtb
-    zip -r9 Test-OSS-KERNEL-RMX2020-NEOLIT.zip *
+    zip -r9 ("$KERNEL_NAME") *
 }
 
 compile
