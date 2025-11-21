@@ -30,11 +30,24 @@ function KERNEL_COMPILE() {
 		tar -xf clang.tar.gz -C clang && if [ -d clang/clang-* ]; then mv clang/clang-*/* clang; fi && rm -rf clang.tar.gz
 	fi
 
-	# Add clang bin directory to PATH
-	export PATH="${PWD}/clang/bin:$PATH"
+        # Tambahkan clang ke PATH
+export PATH="${PWD}/clang/bin:$PATH"
 
-	# Make the config
-	make O=out ARCH=arm64 RMX2020_defconfig
+# Environment
+export ARCH=arm64
+export SUBARCH=arm64
+
+# Gunakan LLVM & LLVM Integrated Assembler
+export LLVM=1
+export LLVM_IAS=1
+
+# Cross compile Android
+export CROSS_COMPILE=aarch64-linux-android-
+export CROSS_COMPILE_ARM32=arm-linux-androideabi-
+export CLANG_TRIPLE=aarch64-linux-gnu-
+
+# Defconfig
+make O=out ARCH=arm64 RMX2020_defconfig
 
 	# Build the kernel with clang and log output
 	make -j$(nproc --all) O=out ARCH=arm64 CC=clang LD=ld.lld AS=llvm-as AR=llvm-ar NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_COMPAT=arm-linux-gnueabi- CROSS_COMPILE_ARM32=arm-linux-gnueabi- LLVM=1 LLVM_IAS=1 2>&1 | tee -a out/compile.log
