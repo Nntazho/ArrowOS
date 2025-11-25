@@ -13,26 +13,20 @@ function KERNEL_COMPILE() {
 	# Set environment variables
 	rm -rf anykernel
         source ~/.bashrc && source ~/.profile
-        export LC_ALL=C && export USE_CCACHE=1 ccache -M 100G
+        export LC_ALL=C && export USE_CCACHE=1
+        ccache -M 100G
         export ARCH=arm64
 	export KBUILD_BUILD_HOST=f-fucek
 	export KBUILD_BUILD_USER=ZhangYao
-
-	# Create output directory and do a clean build
-	rm -rf out && mkdir -p out
-
 	# Download clang if not present
 	git clone --depth=1 https://gitlab.com/sarthakroy2002/android_prebuilts_clang_host_linux-x86_clang-r437112b clang
-   git clone --depth=1 https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9 los-4.9-64
-   git clone --depth=1 https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9 los-4.9-32
-
-	# Add clang bin directory to PATH
-	export PATH="${PWD}/clang/bin:${PATH}:${PWD}/los-4.9-32/bin:${PATH}:${PWD}/los-4.9-64/bin:${PATH}"
-
+        git clone --depth=1 https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9 los-4.9-64
+        git clone --depth=1 https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9 los-4.9-32
 	# Make the config
 	make O=out ARCH=arm64 RMX2020_defconfig
 
 	# Build the kernel with clang and log output
+        PATH="${PWD}/clang/bin:${PATH}:${PWD}/los-4.9-32/bin:${PATH}:${PWD}/los-4.9-64/bin:${PATH}" \
 	make -j$(nproc --all) O=out \
                       ARCH=arm64 \
                       CC="clang" \
