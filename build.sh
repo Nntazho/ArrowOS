@@ -13,8 +13,6 @@ function KERNEL_COMPILE() {
 	# Set environment variables
 	rm -rf anykernel
         source ~/.bashrc && source ~/.profile
-        export LC_ALL=C && export USE_CCACHE=1
-        ccache -M 100G
         export ARCH=arm64
 	export KBUILD_BUILD_HOST=f-fucek
 	export KBUILD_BUILD_USER=ZhangYao
@@ -34,7 +32,6 @@ function KERNEL_COMPILE() {
                       CROSS_COMPILE="${PWD}/los-4.9-64/bin/aarch64-linux-android-" \
                       CROSS_COMPILE_ARM32="${PWD}/los-4.9-32/bin/arm-linux-androideabi-" \
                       CONFIG_NO_ERROR_ON_MISMATCH=y
-                      CONFIG_SECTION_MISMATCH_WARN_ONLY=y
 }
 
 function KERNEL_RESULT() {
