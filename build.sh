@@ -1,65 +1,51 @@
 #!/bin/bash
 SECONDS=0
-set -e
-
-# Set kernel path
-KERNEL_PATH=out/arch/arm64/boot
 
 # Set kernel name
-BUILD_TYPE="SUKISU"
+BUILD_TYPE="KSu"
 DATE="$(TZ=Asia/Jakarta date +%Y%m%d%H%M%S)"
-KERNEL_NAME="SukiSuA16${BUILD_TYPE}-${DATE}.zip"
+KERNEL_NAME="Rk${BUILD_TYPE}-${DATE}.zip"
+
+# Clone SukiSU repo
+if [ ! -d "KernelSU" ]; then curl -LSs "https://raw.githubusercontent.com/rsuntk/KernelSU/main/kernel/setup.sh" | bash -s susfs-rksu-master; fi
 
 function KERNEL_COMPILE() {
-	if [ "$1" == "install" ]; then
-		# Download required package
-		sudo apt update -y && sudo apt upgrade -y && sudo apt install nano bc ccache bison ca-certificates curl flex gcc git libc6-dev libssl-dev openssl python-is-python3 ssh wget zip zstd sudo make clang gcc-arm-linux-gnueabi software-properties-common build-essential libarchive-tools gcc-aarch64-linux-gnu -y && sudo apt install build-essential -y && sudo apt install libssl-dev libffi-dev libncurses5-dev zlib1g zlib1g-dev libreadline-dev libbz2-dev libsqlite3-dev make gcc -y && sudo apt install pigz -y && sudo apt install python2 -y && sudo apt install python3 -y && sudo apt install cpio -y && sudo apt install lld -y && sudo apt install llvm -y && sudo apt-get install g++-aarch64-linux-gnu -y && sudo apt install libelf-dev -y && sudo apt install neofetch -y && neofetch
-	fi
-
 	# Set environment variables
 	export USE_CCACHE=1
-	export KBUILD_BUILD_HOST=builder
-	export KBUILD_BUILD_USER=Nntazho
+	export KBUILD_BUILD_HOST=f-fucek
+	export KBUILD_BUILD_USER=ZhangYao
 
 	# Create output directory and do a clean build
 	rm -rf out && mkdir -p out
 
 	# Download clang if not present
-	if [[ ! -d "clang" ]]; then mkdir -p clang
-		wget https://github.com/Impqxr/aosp_clang_ci/releases/download/13289611/clang-13289611-linux-x86.tar.xz -O clang.tar.gz
-		tar -xf clang.tar.gz -C clang && if [ -d clang/clang-* ]; then mv clang/clang-*/* clang; fi && rm -rf clang.tar.gz
-	fi
+	git clone --depth=1 https://gitlab.com/sarthakroy2002/android_prebuilts_clang_host_linux-x86_clang-r437112b clang
+   git clone --depth=1 https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9 los-4.9-64
+   git clone --depth=1 https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9 los-4.9-32
 
-        # Tambahkan clang ke PATH
-export PATH="${PWD}/clang/bin:$PATH"
+	# Add clang bin directory to PATH
+	export PATH="${PWD}/clang/bin:${PATH}:${PWD}/los-4.9-32/bin:${PATH}:${PWD}/los-4.9-64/bin:${PATH}"
 
-# Environment
-export ARCH=arm64
-export SUBARCH=arm64
-
-# Gunakan LLVM & LLVM Integrated Assembler
-export LLVM=1
-export LLVM_IAS=1
-
-# Cross compile Android
-export CROSS_COMPILE=aarch64-linux-android-
-export CROSS_COMPILE_ARM32=arm-linux-androideabi-
-export CLANG_TRIPLE=aarch64-linux-gnu-
-
-# Defconfig
-make O=out ARCH=arm64 RMX2020_defconfig
+	# Make the config
+	make O=out ARCH=arm64 RMX2020_defconfig
 
 	# Build the kernel with clang and log output
-	make -j$(nproc --all) O=out ARCH=arm64 CC=clang LD=ld.lld AS=llvm-as AR=llvm-ar NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_COMPAT=arm-linux-gnueabi- CROSS_COMPILE_ARM32=arm-linux-gnueabi- LLVM=1 LLVM_IAS=1 2>&1 | tee -a out/compile.log
+	make -j$(nproc --all) O=out \
+                      ARCH=arm64 \
+                      CC="clang" \
+                      CLANG_TRIPLE=aarch64-linux-gnu- \
+                      CROSS_COMPILE="${PWD}/los-4.9-64/bin/aarch64-linux-android-" \
+                      CROSS_COMPILE_ARM32="${PWD}/los-4.9-32/bin/arm-linux-androideabi-" \
+                      CONFIG_NO_ERROR_ON_MISMATCH=y
 }
 
 function KERNEL_RESULT() {
 	# Create anykernel
 	rm -rf anykernel
-	git clone https://github.com/sarthakroy2002/AnyKernel3.git anykernel
+	git clone https://github.com/muhammmadnantaa-hub/AnyKernel.git anykernel
 
-        #cp
-        cp out/arch/arm64/boot/Image.gz-dtb anykernel
+	# Copying image
+	cp out/arch/arm64/boot/Image.gz-dtb anykernel
 
 	# Created zip kernel
 	cd anykernel && zip -r9 "${KERNEL_NAME}" *

@@ -86,7 +86,6 @@ int vfs_statfs(const struct path *path, struct kstatfs *buf)
 		buf->f_flags = calculate_f_flags(&mnt->mnt);
 	return error;
 #else
-
 	error = statfs_by_dentry(path->dentry, buf);
 	if (!error)
 		buf->f_flags = calculate_f_flags(path->mnt);
