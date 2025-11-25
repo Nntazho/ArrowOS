@@ -156,7 +156,7 @@ static void avc_dump_query(struct audit_buffer *ab, u32 ssid, u32 tsid, u16 tcla
 	char *scontext;
 	u32 scontext_len;
 
-	rc = security_sid_to_context(state, ssid, &scontext, &scontext_len);
+	rc = security_sid_to_context(ssid, &scontext, &scontext_len);
 	if (rc)
 		audit_log_format(ab, "ssid=%d", ssid);
 	else {
@@ -164,7 +164,7 @@ static void avc_dump_query(struct audit_buffer *ab, u32 ssid, u32 tsid, u16 tcla
 		kfree(scontext);
 	}
 
-	rc = security_sid_to_context(state, tsid, &scontext, &scontext_len);
+	rc = security_sid_to_context(tsid, &scontext, &scontext_len);
 #ifdef CONFIG_KSU_SUSFS
 	if (unlikely(tsid == susfs_ksu_sid && susfs_is_avc_log_spoofing_enabled)) {
 		if (rc)
