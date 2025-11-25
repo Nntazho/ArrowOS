@@ -30,7 +30,6 @@ function KERNEL_COMPILE() {
                       CLANG_TRIPLE=aarch64-linux-gnu- \
                       CROSS_COMPILE="${PWD}/los-4.9-64/bin/aarch64-linux-android-" \
                       CROSS_COMPILE_ARM32="${PWD}/los-4.9-32/bin/arm-linux-androideabi-" \
-                      CONFIG_NO_ERROR_ON_MISMATCH=y
 }
 
 function KERNEL_RESULT() {
