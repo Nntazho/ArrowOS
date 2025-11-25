@@ -11,7 +11,11 @@ if [ ! -d "KernelSU" ]; then curl -LSs "https://raw.githubusercontent.com/rsuntk
 
 function KERNEL_COMPILE() {
 	# Set environment variables
-	export USE_CCACHE=1
+	rm -rf anykernel
+        source ~/.bashrc && source ~/.profile
+        export LC_ALL=C && export USE_CCACHE=1
+        ccache -M 100G
+        export ARCH=arm64
 	export KBUILD_BUILD_HOST=f-fucek
 	export KBUILD_BUILD_USER=ZhangYao
 
