@@ -6,8 +6,7 @@ BUILD_TYPE="KSu"
 DATE="$(TZ=Asia/Jakarta date +%Y%m%d%H%M%S)"
 KERNEL_NAME="Rk${BUILD_TYPE}-${DATE}.zip"
 
-# Clone SukiSU repo
-if [ ! -d "KernelSU" ]; then curl -LSs "https://raw.githubusercontent.com/kernel-build-from-rainyland/KernelSU-Next/next/kernel/setup.sh" | bash -s next; fi
+curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" | bash -s next
 
 function KERNEL_COMPILE() {
 	# Set environment variables
