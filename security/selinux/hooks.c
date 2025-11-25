@@ -2370,14 +2370,6 @@ static int check_nnp_nosuid(const struct linux_binprm *bprm,
 	int error;
 	u32 seclen;
 #endif
-
-#ifdef CONFIG_KSU
-	static u32 ksu_sid;
-	char *secdata;
-	int error;
-	u32 seclen;
-#endif
-
 	if (!nnp && !nosuid)
 		return 0; /* neither NNP nor nosuid */
 
