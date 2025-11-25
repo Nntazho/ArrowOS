@@ -6,7 +6,7 @@ BUILD_TYPE="KSu"
 DATE="$(TZ=Asia/Jakarta date +%Y%m%d%H%M%S)"
 KERNEL_NAME="Rk${BUILD_TYPE}-${DATE}.zip"
 
-curl -LSs https://raw.githubusercontent.com/kylieeXD/KernelSU-Next/next/kernel/setup.sh | bash -s next
+curl -LSs "https://raw.githubusercontent.com/rsuntk/KernelSU/main/kernel/setup.sh" | bash -s main
 
 function KERNEL_COMPILE() {
 	# Set environment variables
